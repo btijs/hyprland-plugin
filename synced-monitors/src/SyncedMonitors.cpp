@@ -10,8 +10,16 @@ void SyncedMonitors::initializeWorkspaces() {
     Debug::log(INFO, "Initializing workspaces");
     std::cout << "Initializing workspaces" << std::endl;
     for (const auto & m_vMonitor : g_pCompositor->m_vMonitors) {
-        m_vMonitor->activeWorkspace->rename("0");
+        PHLWORKSPACE workspace = m_vMonitor->activeWorkspace;
+        workspace->rename(
+            getWorkspaceName(0, m_vMonitor->ID)
+        );
+        g_pEventManager->postEvent(SHyprIPCEvent{"renameworkspace", std::to_string(workspace->m_iID) + ',' + workspace->m_szName});
     }
+}
+
+std::string SyncedMonitors::getWorkspaceName(DESKID desk_id, MONITORID monitor_id) {
+    return std::to_string(desk_id) + "." + std::to_string(monitor_id);
 }
 
 WORKSPACEID SyncedMonitors::translateDeskToWorkspace(DESKID desk_id, MONITORID monitor_id) {
@@ -39,7 +47,13 @@ PHLWORKSPACE SyncedMonitors::createWorkspace(const DESKID desk_id, const MONITOR
     WORKSPACEID workspace_id = translateDeskToWorkspace(desk_id, monitor_id);
     Debug::log(INFO, "Creating new workspace on monitor " + std::to_string(monitor_id) + " with ID " + std::to_string(workspace_id));
     std::cout << "Creating new workspace on monitor " << monitor_id << " with ID " << workspace_id << std::endl;
-    return g_pCompositor->createNewWorkspace(workspace_id, monitor_id, std::to_string(desk_id));
+    PHLWORKSPACE workspace = g_pCompositor->createNewWorkspace(
+        workspace_id,
+        monitor_id,
+        getWorkspaceName(desk_id, monitor_id)
+    );
+    g_pEventManager->postEvent(SHyprIPCEvent{"workspace", workspace->m_szName});
+    return workspace;
 }
 
 // Change to workspace to specified desk_id on all monitors
@@ -52,18 +66,21 @@ void SyncedMonitors::changeWorkspaces(DESKID desk_id) {
         PHLWORKSPACE workspace = getWorkspace(desk_id, m_vMonitor->ID);
         // Check if the workspace is already active
         // to avoid infinite loop of callbacks
-        if (m_vMonitor->activeWorkspace != workspace) {
+        if (m_vMonitor->activeWorkspaceID() != workspace->m_iID) {
             m_vMonitor->changeWorkspace(workspace);
+            g_pEventManager->postEvent(SHyprIPCEvent{"workspace", workspace->m_szName});
         }
     }
 }
 
 void SyncedMonitors::increaseWorkspaces(int num_desks) {
-    Debug::log(INFO, "Increasing number of desks by" + std::to_string(num_desks));
-    std::cout << "Increasing number of desks by " << num_desks << std::endl;
-    // Get the current number of desks
     const WORKSPACEID w_id = g_pCompositor->getMonitorFromCursor()->activeWorkspace->m_iID;
     const DESKID desk_id = translateWorkspaceToDesk(w_id);
+    if (desk_id + num_desks < 0) {
+        Debug::log(INFO, "Cannot decrease workspaces below 0");
+        std::cout << "Cannot decrease workspaces below 0" << std::endl;
+        return;
+    }
     changeWorkspaces(desk_id  + num_desks);
 }
 
@@ -80,13 +97,15 @@ void SyncedMonitors::previousWorkspaces() {
 void SyncedMonitors::moveToWorkspace(DESKID desk_id) {
     Debug::log(INFO, "Moving active window to desk " + std::to_string(desk_id));
     std::cout << "Moving active window to desk " << desk_id << std::endl;
-    WORKSPACEID target_workspace_id = translateDeskToWorkspace(desk_id, g_pCompositor->getMonitorFromCursor()->ID);
 
-    // Just use hyprlands built in dispatcher to move the window
-    HyprlandAPI::invokeHyprctlCommand("dispatch", "movetoworkspace " + std::to_string(target_workspace_id));
+    PHLWORKSPACE target_workspace = getWorkspace(desk_id, g_pCompositor->getMonitorFromCursor()->ID);
+    PHLWINDOW active_window = g_pCompositor->m_pLastWindow.lock();
+    if (!active_window) {
+        Debug::log(ERR, "No active window found");
+        std::cout << "No active window found" << std::endl;
+        return;
+    }
+    g_pCompositor->moveWindowToWorkspaceSafe(active_window, target_workspace);
 
-    // It is possible that the invokeHyprctlCommand created the workspace
-    // so we need to rename it to the desk_id
-    g_pCompositor->getWorkspaceByID(target_workspace_id)->rename(std::to_string(desk_id));
     changeWorkspaces(desk_id);
 }

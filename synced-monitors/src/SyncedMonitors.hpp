@@ -9,6 +9,9 @@ class SyncedMonitors {
 
 public:
     static void initializeWorkspaces();
+
+    static std::string getWorkspaceName(DESKID desk_id, MONITORID monitor_id);
+
     static void changeWorkspaces(DESKID desk_id);
     static void increaseWorkspaces(int num_desks);
     static void nextWorkspaces();
