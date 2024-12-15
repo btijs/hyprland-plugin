@@ -38,6 +38,14 @@ void moveToWorkSpace(std::string arg) {
     SyncedMonitors::moveToWorkspace(stoi(arg));
 }
 
+void moveToNextWorkspace(std::string arg) {
+    SyncedMonitors::moveToNextWorkspace();
+}
+
+void moveToPreviousWorkspace(std::string arg) {
+    SyncedMonitors::moveToPreviousWorkspace();
+}
+
 // This function is called when the plugin is loaded.
 APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle)
 {
@@ -57,9 +65,11 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle)
     SyncedMonitors::initializeWorkspaces();
 
     HyprlandAPI::addDispatcher(PHANDLE, "syncworkspace", focusWorkSpace);
-    HyprlandAPI::addDispatcher(PHANDLE, "nextworkspace", nextWorkSpace);
-    HyprlandAPI::addDispatcher(PHANDLE, "previousworkspace", previousWorkSpace);
+    HyprlandAPI::addDispatcher(PHANDLE, "nextsyncedworkspace", nextWorkSpace);
+    HyprlandAPI::addDispatcher(PHANDLE, "previoussyncedworkspace", previousWorkSpace);
     HyprlandAPI::addDispatcher(PHANDLE, "movetosyncedworkspace", moveToWorkSpace);
+    HyprlandAPI::addDispatcher(PHANDLE, "movetonextsyncedworkspace", moveToNextWorkspace);
+    HyprlandAPI::addDispatcher(PHANDLE, "movetoprevioussyncedworkspace", moveToPreviousWorkspace);
 
     onWorkSpaceChangeHook = HyprlandAPI::registerCallbackDynamic(PHANDLE, "workspace", onWorkSpaceChange);
 

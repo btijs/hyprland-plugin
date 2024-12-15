@@ -17,6 +17,13 @@ public:
     static void nextWorkspaces();
     static void previousWorkspaces();
     static void moveToWorkspace(DESKID desk_id);
+
+    static void moveToIncreaseWorkspaces(int num_desks);
+
+    static void moveToNextWorkspace();
+
+    static void moveToPreviousWorkspace();
+
     static DESKID translateWorkspaceToDesk(WORKSPACEID workspace_id);
 
 private:

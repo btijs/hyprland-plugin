@@ -109,3 +109,22 @@ void SyncedMonitors::moveToWorkspace(DESKID desk_id) {
 
     changeWorkspaces(desk_id);
 }
+
+void SyncedMonitors::moveToIncreaseWorkspaces(int num_desks) {
+    const WORKSPACEID w_id = g_pCompositor->getMonitorFromCursor()->activeWorkspace->m_iID;
+    const DESKID desk_id = translateWorkspaceToDesk(w_id);
+    if (desk_id + num_desks < 0) {
+        Debug::log(INFO, "Cannot decrease workspaces below 0");
+        std::cout << "Cannot decrease workspaces below 0" << std::endl;
+        return;
+    }
+    moveToWorkspace(desk_id + num_desks);
+}
+
+void SyncedMonitors::moveToNextWorkspace() {
+    moveToIncreaseWorkspaces(1);
+}
+
+void SyncedMonitors::moveToPreviousWorkspace() {
+    moveToIncreaseWorkspaces(-1);
+}
