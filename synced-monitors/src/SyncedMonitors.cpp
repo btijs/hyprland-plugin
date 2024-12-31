@@ -10,6 +10,10 @@ void SyncedMonitors::initializeWorkspaces() {
     Debug::log(INFO, "Initializing workspaces");
     std::cout << "Initializing workspaces" << std::endl;
     for (const auto & m_vMonitor : g_pCompositor->m_vMonitors) {
+        if (m_vMonitor->ID == -1) {
+            Debug::log(INFO, "Skipping monitor with ID -1");
+            return;
+        }
         PHLWORKSPACE workspace = m_vMonitor->activeWorkspace;
         workspace->rename(
             getWorkspaceName(0, m_vMonitor->ID)
@@ -63,6 +67,10 @@ void SyncedMonitors::changeWorkspaces(DESKID desk_id) {
 
     // Loop over all monitors and change the workspace to the specified workspace
     for (const auto & m_vMonitor : g_pCompositor->m_vMonitors) {
+        if (m_vMonitor->ID == -1) {
+            Debug::log(INFO, "Skipping monitor with ID -1");
+            return;
+        }
         PHLWORKSPACE workspace = getWorkspace(desk_id, m_vMonitor->ID);
         // Check if the workspace is already active
         // to avoid infinite loop of callbacks
