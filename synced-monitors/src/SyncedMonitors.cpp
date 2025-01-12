@@ -46,6 +46,7 @@ PHLWORKSPACE SyncedMonitors::getWorkspace(DESKID desk_id, const MONITORID monito
     if (!workspace) {
         workspace = createWorkspace(desk_id, monitor_id);
     }
+    workspace->rename(getWorkspaceName(desk_id, monitor_id));
     Debug::log(INFO, "Got workspace with ID " + std::to_string(workspace_id));
     return workspace;
 }
