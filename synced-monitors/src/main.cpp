@@ -11,13 +11,11 @@ inline HANDLE PHANDLE = nullptr;
 static CSharedPointer<HOOK_CALLBACK_FN> onWorkSpaceChangeHook = nullptr;
 
 // Do NOT change this function.
-APICALL EXPORT std::string PLUGIN_API_VERSION()
-{
+APICALL EXPORT std::string PLUGIN_API_VERSION() {
     return HYPRLAND_API_VERSION;
 }
 
-void onWorkSpaceChange(void *data, SCallbackInfo &info, std::any val)
-{
+void onWorkSpaceChange(void *data, SCallbackInfo &info, std::any val) {
     const auto focused_workspace = std::any_cast<PHLWORKSPACE>(val);
     SyncedMonitors::changeWorkspaces(SyncedMonitors::translateWorkspaceToDesk(focused_workspace->m_iID));
 }
@@ -47,16 +45,14 @@ void moveToPreviousWorkspace(std::string arg) {
 }
 
 // This function is called when the plugin is loaded.
-APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle)
-{
+APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
     PHANDLE = handle;
 
     const std::string HASH = __hyprland_api_get_hash();
 
     // ALWAYS add this to your plugins. It will prevent random crashes coming from
     // mismatched header versions.
-    if (HASH != GIT_COMMIT_HASH)
-    {
+    if (HASH != GIT_COMMIT_HASH) {
         HyprlandAPI::addNotification(PHANDLE, "[CUSTOM-PLUGIN] Mismatched headers! Can't proceed.",
                                      CHyprColor{1.0, 0.2, 0.2, 1.0}, 5000);
         throw std::runtime_error("[MyPlugin] Version mismatch");

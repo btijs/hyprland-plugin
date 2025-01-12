@@ -9,7 +9,7 @@
 void SyncedMonitors::initializeWorkspaces() {
     Debug::log(INFO, "Initializing workspaces");
     std::cout << "Initializing workspaces" << std::endl;
-    for (const auto & m_vMonitor : g_pCompositor->m_vMonitors) {
+    for (const auto &m_vMonitor: g_pCompositor->m_vMonitors) {
         if (m_vMonitor->ID == -1) {
             Debug::log(INFO, "Skipping monitor with ID -1");
             return;
@@ -18,7 +18,9 @@ void SyncedMonitors::initializeWorkspaces() {
         workspace->rename(
             getWorkspaceName(0, m_vMonitor->ID)
         );
-        g_pEventManager->postEvent(SHyprIPCEvent{"renameworkspace", std::to_string(workspace->m_iID) + ',' + workspace->m_szName});
+        g_pEventManager->postEvent(SHyprIPCEvent{
+            "renameworkspace", std::to_string(workspace->m_iID) + ',' + workspace->m_szName
+        });
     }
 }
 
@@ -37,7 +39,8 @@ DESKID SyncedMonitors::translateWorkspaceToDesk(WORKSPACEID workspace_id) {
 }
 
 PHLWORKSPACE SyncedMonitors::getWorkspace(DESKID desk_id, const MONITORID monitor_id) {
-    Debug::log(INFO, "Getting workspace for desk " + std::to_string(desk_id) + " on monitor " + std::to_string(monitor_id));
+    Debug::log(
+        INFO, "Getting workspace for desk " + std::to_string(desk_id) + " on monitor " + std::to_string(monitor_id));
     WORKSPACEID workspace_id = translateDeskToWorkspace(desk_id, monitor_id);
     PHLWORKSPACE workspace = g_pCompositor->getWorkspaceByID(workspace_id);
     if (!workspace) {
@@ -49,7 +52,9 @@ PHLWORKSPACE SyncedMonitors::getWorkspace(DESKID desk_id, const MONITORID monito
 
 PHLWORKSPACE SyncedMonitors::createWorkspace(const DESKID desk_id, const MONITORID monitor_id) {
     WORKSPACEID workspace_id = translateDeskToWorkspace(desk_id, monitor_id);
-    Debug::log(INFO, "Creating new workspace on monitor " + std::to_string(monitor_id) + " with ID " + std::to_string(workspace_id));
+    Debug::log(
+        INFO, "Creating new workspace on monitor " + std::to_string(monitor_id) + " with ID " + std::to_string(
+                  workspace_id));
     std::cout << "Creating new workspace on monitor " << monitor_id << " with ID " << workspace_id << std::endl;
     PHLWORKSPACE workspace = g_pCompositor->createNewWorkspace(
         workspace_id,
@@ -66,7 +71,7 @@ void SyncedMonitors::changeWorkspaces(DESKID desk_id) {
     std::cout << "Changing to desk " << desk_id << std::endl;
 
     // Loop over all monitors and change the workspace to the specified workspace
-    for (const auto & m_vMonitor : g_pCompositor->m_vMonitors) {
+    for (const auto &m_vMonitor: g_pCompositor->m_vMonitors) {
         if (m_vMonitor->ID == -1) {
             Debug::log(INFO, "Skipping monitor with ID -1");
             return;
@@ -89,7 +94,7 @@ void SyncedMonitors::increaseWorkspaces(int num_desks) {
         std::cout << "Cannot decrease workspaces below 0" << std::endl;
         return;
     }
-    changeWorkspaces(desk_id  + num_desks);
+    changeWorkspaces(desk_id + num_desks);
 }
 
 void SyncedMonitors::nextWorkspaces() {
