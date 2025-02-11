@@ -1,5 +1,7 @@
 PLUGIN_NAME=synced-monitors
 
+CURRENT_DIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
+
 CXX=g++
 
 # Source files
@@ -36,7 +38,8 @@ $(OBJECT_DIR)/%.o: src/%.cpp $(HEADS) | $(OBJECT_DIR)
 	$(CXX) $(COMPILE_FLAGS) $(INCLUDES) -c -o $@ $<
 
 install: all
-	cp $(PLUGIN_NAME).so ${HOME}/.local/share/hyprpm/hyprland-plugins${PLUGIN_NAME}.so
+	hyprctl plugin unload $(CURRENT_DIR)$(PLUGIN_NAME).so
+	hyprctl plugin load $(CURRENT_DIR)$(PLUGIN_NAME).so
 
 $(PLUGIN_NAME).so: $(addprefix $(OBJECT_DIR)/, $(notdir $(SOURCES:.cpp=.o)))
 	$(CXX) $(LINK_FLAGS) -o $@ $^ $(COMPILE_FLAGS)

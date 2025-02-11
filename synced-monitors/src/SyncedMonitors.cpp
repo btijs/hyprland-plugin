@@ -4,6 +4,10 @@
 
 #include "SyncedMonitors.hpp"
 
+#include <hyprland/src/helpers/Monitor.hpp>
+#include <hyprland/src/plugins/PluginAPI.hpp>
+#include <hyprland/src/managers//EventManager.hpp>
+
 // Create an initial workspace on all monitors
 // This function is called when the plugin is loaded.
 void SyncedMonitors::initializeWorkspaces() {
@@ -47,6 +51,9 @@ PHLWORKSPACE SyncedMonitors::getWorkspace(DESKID desk_id, const MONITORID monito
         workspace = createWorkspace(desk_id, monitor_id);
     }
     workspace->rename(getWorkspaceName(desk_id, monitor_id));
+    g_pEventManager->postEvent(SHyprIPCEvent{
+        "renameworkspace", std::to_string(workspace->m_iID) + ',' + workspace->m_szName
+    });
     Debug::log(INFO, "Got workspace with ID " + std::to_string(workspace_id));
     return workspace;
 }

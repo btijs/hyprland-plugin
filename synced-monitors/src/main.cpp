@@ -15,33 +15,40 @@ APICALL EXPORT std::string PLUGIN_API_VERSION() {
     return HYPRLAND_API_VERSION;
 }
 
-void onWorkSpaceChange(void *data, SCallbackInfo &info, std::any val) {
+SDispatchResult onWorkSpaceChange(void *data, SCallbackInfo &info, std::any val) {
     const auto focused_workspace = std::any_cast<PHLWORKSPACE>(val);
     SyncedMonitors::changeWorkspaces(SyncedMonitors::translateWorkspaceToDesk(focused_workspace->m_iID));
+    return SDispatchResult{};
 }
 
-void focusWorkSpace(std::string arg) {
+SDispatchResult focusWorkSpace(std::string arg) {
     SyncedMonitors::changeWorkspaces(stoi(arg));
+    return SDispatchResult{};
 }
 
-void nextWorkSpace(std::string arg) {
+SDispatchResult nextWorkSpace(std::string arg) {
     SyncedMonitors::nextWorkspaces();
+    return SDispatchResult{};
 }
 
-void previousWorkSpace(std::string arg) {
+SDispatchResult previousWorkSpace(std::string arg) {
     SyncedMonitors::previousWorkspaces();
+    return SDispatchResult{};
 }
 
-void moveToWorkSpace(std::string arg) {
+SDispatchResult moveToWorkSpace(std::string arg) {
     SyncedMonitors::moveToWorkspace(stoi(arg));
+    return SDispatchResult{};
 }
 
-void moveToNextWorkspace(std::string arg) {
+SDispatchResult moveToNextWorkspace(std::string arg) {
     SyncedMonitors::moveToNextWorkspace();
+    return SDispatchResult{};
 }
 
-void moveToPreviousWorkspace(std::string arg) {
+SDispatchResult moveToPreviousWorkspace(std::string arg) {
     SyncedMonitors::moveToPreviousWorkspace();
+    return SDispatchResult{};
 }
 
 // This function is called when the plugin is loaded.
@@ -60,12 +67,12 @@ APICALL EXPORT PLUGIN_DESCRIPTION_INFO PLUGIN_INIT(HANDLE handle) {
 
     SyncedMonitors::initializeWorkspaces();
 
-    HyprlandAPI::addDispatcher(PHANDLE, "syncworkspace", focusWorkSpace);
-    HyprlandAPI::addDispatcher(PHANDLE, "nextsyncedworkspace", nextWorkSpace);
-    HyprlandAPI::addDispatcher(PHANDLE, "previoussyncedworkspace", previousWorkSpace);
-    HyprlandAPI::addDispatcher(PHANDLE, "movetosyncedworkspace", moveToWorkSpace);
-    HyprlandAPI::addDispatcher(PHANDLE, "movetonextsyncedworkspace", moveToNextWorkspace);
-    HyprlandAPI::addDispatcher(PHANDLE, "movetoprevioussyncedworkspace", moveToPreviousWorkspace);
+    HyprlandAPI::addDispatcherV2(PHANDLE, "syncworkspace", focusWorkSpace);
+    HyprlandAPI::addDispatcherV2(PHANDLE, "nextsyncedworkspace", nextWorkSpace);
+    HyprlandAPI::addDispatcherV2(PHANDLE, "previoussyncedworkspace", previousWorkSpace);
+    HyprlandAPI::addDispatcherV2(PHANDLE, "movetosyncedworkspace", moveToWorkSpace);
+    HyprlandAPI::addDispatcherV2(PHANDLE, "movetonextsyncedworkspace", moveToNextWorkspace);
+    HyprlandAPI::addDispatcherV2(PHANDLE, "movetoprevioussyncedworkspace", moveToPreviousWorkspace);
 
     onWorkSpaceChangeHook = HyprlandAPI::registerCallbackDynamic(PHANDLE, "workspace", onWorkSpaceChange);
 
