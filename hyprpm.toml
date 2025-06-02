@@ -7,7 +7,7 @@ commit_pins = [
     ["0bd541f2fd902dbfa04c3ea2ccf679395e316887", "6f3b54d2b619d8411bcfea5c690321896cf47ee6"], # 0.46.2
     ["882f7ad7d2bbfc7440d0ccaef93b1cdd78e8e3ff", "ba6b5897548ffc2964951fdf42ed905ae1177816"], # 0.47.2
     ["5ee35f914f921e5696030698e74fb5566a804768", "bee2e5ceba228466d20e1a783ec95b317eded651"], # 0.48.0
-    ["882f7ad7d2bbfc7440d0ccaef93b1cdd78e8e3ff", "bee2e5ceba228466d20e1a783ec95b317eded651"]  # 0.48.1
+    ["882f7ad7d2bbfc7440d0ccaef93b1cdd78e8e3ff", "0d98c2d614a0178980fe9782953568790d93ca0b"]  # 0.48.1
 ]
 
 [synced-monitors]
