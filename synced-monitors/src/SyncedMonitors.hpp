@@ -26,6 +26,8 @@ public:
 
     static DESKID translateWorkspaceToDesk(WORKSPACEID workspace_id);
 
+    static void fixWorkSpaceName(PHLWORKSPACE workspace);
+
 private:
     static WORKSPACEID translateDeskToWorkspace(DESKID desk_id, MONITORID monitor_id);
     static PHLWORKSPACE getWorkspace(DESKID desk_id, MONITORID monitor_id);
